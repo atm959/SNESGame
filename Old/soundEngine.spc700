@@ -1,0 +1,88 @@
+arch spc700-raw
+ORG $000500
+
+Main:
+	mov a, #$0C
+	mov $F2, a
+	mov a, #$7F
+	mov $F3, a	;Set Left Main Volume
+	
+	mov a, #$1C
+	mov $F2, a
+	mov a, #$7F
+	mov $F3, a	;Set Right Main Volume
+
+	mov a, #$6C
+	mov $F2, a
+	mov a, #$3E
+	mov $F3, a ;Unmute, enable 16KHz noise
+	
+	mov a, #$3D
+	mov $F2, a
+	mov a, #$01
+	mov $F3, a ;Enable noise on channel 0
+	
+	mov a, #$00
+	mov $F2, a
+	mov a, #$7F
+	mov $F3, a ;Set the left volume of channel 0
+	
+	mov a, #$01
+	mov $F2, a
+	mov a, #$7F
+	mov $F3, a ;Set the right volume of channel 0
+	
+	mov a, #$07
+	mov $F2, a
+	mov a, #$1F
+	mov $F3, a	;Ignore envelope settings
+	
+	mov a, #$4C
+	mov $F2, a
+	mov a, #$01
+	mov $F3, a ;Start voice 0
+	
+	mov a, #$00
+	mov $0000, a
+	
+Loop:
+	mov a, $00
+	cmp a, $F4		;Check if the SNES sent a new byte to PORT0
+	beq NoNewData
+	
+	nop
+	nop
+	mov $00, $F4
+	
+	mov a, $F5
+	cmp a, #$00
+	beq TurnNoiseOff
+	
+TurnNoiseOn:
+	mov a, #$00
+	mov $F2, a
+	mov a, #$7F
+	mov $F3, a ;Set the left volume of channel 0
+	
+	mov a, #$01
+	mov $F2, a
+	mov a, #$7F
+	mov $F3, a ;Set the right volume of channel 0
+	jmp Done
+TurnNoiseOff:
+	mov a, #$00
+	mov $F2, a
+	mov a, #$00
+	mov $F3, a ;Set the left volume of channel 0
+	
+	mov a, #$01
+	mov $F2, a
+	mov a, #$00
+	mov $F3, a ;Set the right volume of channel 0
+Done:
+	
+	mov $F4, $00	;Echo the value back
+	
+NoNewData:
+	
+	jmp Loop   ;An infinite loop, so the SPC700 doesn't crash
