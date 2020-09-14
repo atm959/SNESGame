@@ -33,7 +33,7 @@ Main:
     rep #$10								;Set X/Y to 16-bit
     sep #$20								;Set A to 8-bit
 
-	jsl UploadAndExecuteSoundEngine
+	;jsl UploadAndExecuteSoundEngine
 
     LoadPalette BGPalette, 0, 12			;Load the background palette
 
@@ -67,9 +67,9 @@ Main:
 	jsr MosaicEffect						; Do the mosaic effect
 
 	lda #20
-	sta $0000
+	sta.b $0000
 	lda #40
-	sta $0001
+	sta.b $0001
 	
 Infinity:
 	sep #$20
@@ -213,7 +213,7 @@ VBlank:
 	ldx #$0100
 	stx $2102
 
-	lda #$00
+	lda #$FF
 	sta $2104
 	;Neo Jr. Sprite Code End
 
@@ -279,7 +279,29 @@ Text: .db "                                "
 	  .db " USE THE D-PAD TO MOVE THE      "
 	  .db "  CHARACTER                     "
 	  .db "                                "
-	  .db " TRYING TO RE-ADD SOUND STUFF   "
+	  .db " TIME TO MAKE MAJOR CHANGES!!!  "
+	  .db "                                "
+	  .db "                                "
+	  .db "                                "
+	  .db "                                "
+	  .db "                                "
+	  .db "                                "
+	  .db "                                "
+	  .db "                                "
+	  .db "                                "
+	  .db "                                "
+	  .db "                                "
+	  .db "                                "
+	  .db "                                "
+	  .db "                                "
+	  .db "                                "
+	  .db "                                "
+	  .db "                                "
+	  .db "                                "
+	  .db "                                "
+	  .db "                                "
+	  .db "                                "
+	  .db "     PROGRAMMED BY ATM959       "
 	  .db $FF
 
 PlaceWater:
@@ -389,88 +411,88 @@ SetupVideo:
 
     rts
 
-UploadAndExecuteSoundEngine:
-	sei			;Disable interrupts
-
-@WaitReady1:
-	lda $2140
-	cmp #$AA
-	bne @WaitReady1
-@WaitReady2:
-	lda $2141
-	cmp #$BB
-	bne @WaitReady2	;"Is the SPC700 ready?"
-
-	lda #$01
-	sta $2141
-	lda #$00
-	sta $2142
-	lda #$05
-	sta $2143
-	lda #$CC
-	sta $2140		;Send the transfer begin bytes
-
-@WaitEcho1:
-	lda $2140
-	cmp #$CC
-	bne @WaitEcho1	;Wait for PORT0 to echo
-
-	ldx SoundEngineEnd-SoundEngine
-	ldy #$0000
-@TransferFirst:
-	lda SoundEngine, y
-	sta $2141		;Write the first byte to PORT1
-
-	lda #$00
-	sta $2140		;Write 0 to PORT0
-
-@WaitEcho2:
-	lda $2140
-	cmp #$00
-	bne @WaitEcho2	;Wait for PORT0 to echo
-
-	dex
-	iny
-
-@TransferRest:
-	lda SoundEngine, y
-	sta $2141		;Write the next byte to PORT1
-
-	lda $2140
-	inc a
-	sta $2140		;Increase the byte in PORT0 and send it back
-	sta $0000
-
-@WaitEcho3:
-	lda $2140
-	cmp $0000
-	bne @WaitEcho3
-
-	dex
-	iny
-
-	txa
-	cmp #$00
-	bne @TransferRest
-
-	lda #$00
-	sta $2141	;0 in PORT1
-	lda #$00
-	sta $2142
-	lda #$05
-	sta $2143	;Execute address in PORT2 and PORT3
-	lda $2140
-	clc
-	adc #$02
-	sta $2140	;Increase PORT0 by 2 and store it in PORT0
-
-	stz $0000
-	lda #$00
-	ldx #$0000
-	ldy #$0000
-
-	cli			;Enable interrupts
-	rtl
+;UploadAndExecuteSoundEngine:
+;	sei			;Disable interrupts
+;
+;@WaitReady1:
+;	lda $2140
+;	cmp #$AA
+;	bne @WaitReady1
+;@WaitReady2:
+;	lda $2141
+;	cmp #$BB
+;	bne @WaitReady2	;"Is the SPC700 ready?"
+;
+;	lda #$01
+;	sta $2141
+;	lda #$00
+;	sta $2142
+;	lda #$05
+;	sta $2143
+;	lda #$CC
+;	sta $2140		;Send the transfer begin bytes
+;
+;@WaitEcho1:
+;	lda $2140
+;	cmp #$CC
+;	bne @WaitEcho1	;Wait for PORT0 to echo
+;
+;	ldx SoundEngineEnd-SoundEngine
+;	ldy #$0000
+;@TransferFirst:
+;	lda SoundEngine, y
+;	sta $2141		;Write the first byte to PORT1
+;
+;	lda #$00
+;	sta $2140		;Write 0 to PORT0
+;
+;@WaitEcho2:
+;	lda $2140
+;	cmp #$00
+;	bne @WaitEcho2	;Wait for PORT0 to echo
+;
+;	dex
+;	iny
+;
+;@TransferRest:
+;	lda SoundEngine, y
+;	sta $2141		;Write the next byte to PORT1
+;
+;	lda $2140
+;	inc a
+;	sta $2140		;Increase the byte in PORT0 and send it back
+;	sta $0000
+;
+;@WaitEcho3:
+;	lda $2140
+;	cmp $0000
+;	bne @WaitEcho3
+;
+;	dex
+;	iny
+;
+;	txa
+;	cmp #$00
+;	bne @TransferRest
+;
+;	lda #$00
+;	sta $2141	;0 in PORT1
+;	lda #$00
+;	sta $2142
+;	lda #$05
+;	sta $2143	;Execute address in PORT2 and PORT3
+;	lda $2140
+;	clc
+;	adc #$02
+;	sta $2140	;Increase PORT0 by 2 and store it in PORT0
+;
+;	stz $0000
+;	lda #$00
+;	ldx #$0000
+;	ldy #$0000
+;
+;	cli			;Enable interrupts
+;	rtl
 
 .ENDS
 ;============================================================================
